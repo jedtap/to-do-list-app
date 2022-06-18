@@ -1,0 +1,49 @@
+.header{
+  display: grid;
+  grid-template-columns: 20% auto 20%;
+  grid-template-rows: 40px 40px 40px;
+  justify-items: center;
+  gap: 10px;
+}
+
+h1{
+  text-align: center;
+
+  font-size: 16px;
+  grid-area: 1 / 1 / 2 / 4;
+}
+
+h2{
+  grid-area: 2 / 2 / 3 / 3;
+}
+
+.btn-outline-primary{
+  grid-area: 2 / 3 / 3 / 4;
+}
+
+.btn-outline-success{
+  grid-area: 3 / 2 / 4 / 3;
+}
+
+.content{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-body{
+  display: grid;
+  grid-template-columns: 30px auto 20px;
+  gap: 10px;
+  align-items: center;
+}
+
+.prio, .delete{
+  font-size: 30px;
+}
+
+:hover.prio, :hover.delete{
+  transform: scale(1.2);
+  cursor: pointer;
+}
