@@ -38,7 +38,10 @@ h2{
   gap: 10px;
 }
 
-.card-body{
+.card{
+  width: 50rem;
+  padding: 10px;
+
   display: grid;
   grid-template-columns: 30px auto 20px;
   gap: 10px;
@@ -60,8 +63,6 @@ h2{
   z-index: 1;
 }
 
-
-/* Modal styling */
 .overlay{
   background-color: var(--shadow);
   position: fixed;
@@ -75,12 +76,15 @@ h2{
   align-items: center;
 }
 
-.form{
+/* Projects Modal */
+.projects-modal{
   width: 30rem;
   margin: auto;
   background: var(--white-main);
   border-radius: 10px;
   padding: 30px;
+
+  display: block;
 }
 
 .list{
@@ -105,7 +109,11 @@ h2{
   cursor: pointer;
 }
 
+.project-title{
+  margin: 0;
+}
+
 .pencil, .delete-proj{
-  font-size: 15px;
+  font-size: 20px;
   text-align: center;
 }
