@@ -1,6 +1,7 @@
 :root {
   --black-faint: #2626261c;
   --white-main: #F8F8F8;
+  --gray-main: #737373;
   --shadow: rgba(0,0,0,0.5);
 }
 
@@ -23,12 +24,16 @@ h2{
   grid-area: 2 / 2 / 3 / 3;
 }
 
-.btn-outline-primary{
+.projects-button{
   grid-area: 2 / 3 / 3 / 4;
 }
 
-.btn-outline-success{
+.controls{
   grid-area: 3 / 2 / 4 / 3;
+}
+
+.date-added{
+  display: none;
 }
 
 .content{
@@ -71,7 +76,7 @@ h2{
   width: 100%;
   height: 100%;
 
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
 }
@@ -136,6 +141,23 @@ h2{
   background: var(--white-main);
   border-radius: 10px;
   padding: 30px;
+}
 
-  display: block;
+/* View task */
+.view-task{
+  width: 30rem;
+  margin: auto;
+  background: var(--white-main);
+  border-radius: 10px;
+  padding: 30px;
+
+  display: none;
+}
+
+.title{
+  font-size: 24px;
+}
+
+.due{
+  color: var(--gray-main);
 }

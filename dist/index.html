@@ -13,7 +13,12 @@
       <h1>GAWAIN - TASKS SIMPLIFIED</h1>
       <h2>Project Makuhita</h2>
       <button type="button" class="btn btn-outline-primary projects-button">Your Projects</button>
-      <button type="button" class="btn btn-outline-success new-task">Add a task</button>
+      <div class="controls">
+        <button type="button" class="btn btn-outline-success new-task">Add a task</button>
+        <button type="button" class="btn btn-outline-secondary priority">Sort by priority</button>
+        <button type="button" class="btn btn-outline-secondary date-added">Sort by date added</button>
+      </div>
+
     </div>
 
     <br>
@@ -21,7 +26,7 @@
 
       <div class="card">
         <div class="icon prio">★</div>
-        <div>
+        <div class="task">
           <h4 class="card-title">Create video on whales</h4>
           <h5 class="card-subtitle mb-2 text-muted">Due Jan 20, 2022 at 11PM</h5>
         </div>
@@ -30,7 +35,7 @@
 
       <div class="card">
         <p class="icon prio">☆</p>
-        <div>
+        <div class="task">
           <h4 class="card-title">Fix groceries</h4>
           <h5 class="card-subtitle mb-2 text-muted">Due Jan 20, 2022 at 11PM</h5>
         </div>
@@ -63,7 +68,8 @@
         </div>
         <br>
         <button type="button" class="btn btn-outline-primary close-projects">Cancel</button>
-        <button type="button" class="btn btn-primary new-project">New project</button>
+        <button type="button" class="btn btn-primary new-project-button">New project</button>
+
       </div>
 
 
@@ -73,7 +79,7 @@
         <br>
         <input type="text" id="name" name="name" value="Photography in Japan" class="form-control" required>
         <br>
-        <button type="button" class="btn btn-outline-success">Save name</button>
+        <button type="button" class="btn btn-outline-success save-name">Save name</button>
       </div>
 
 
@@ -83,7 +89,17 @@
         <br>
         <input type="text" id="name" name="name" placeholder="Your awesome project here!" class="form-control" required>
         <br>
-        <button type="button" class="btn btn-outline-success">Create project</button>
+        <button type="button" class="btn btn-outline-success create-project">Create project</button>
+      </div>
+
+
+      <!-- View task -->
+      <div class="view-task">
+        <input type="text" class="form-control-plaintext title" value="Unscrew T893 bolt">
+        <input type="text" class="form-control-plaintext due" value="Due June 18, 2022 12:15PM">
+        <textarea class="form-control-plaintext description" rows="7" >Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's ske Aldus PageMaker including versions of Lorem Ipsum.</textarea>
+        <button type="button" class="btn btn-outline-primary close-task">Cancel</button>
+        <button type="button" class="btn btn-outline-success save-changes">Save changes</button>
       </div>
 
     </div>
