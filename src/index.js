@@ -74,7 +74,6 @@ function projects(name, title, due, desc, prio) {
 };
 
 function displayToDos(project, index){
-
   // Goal is to display this HTML structure to class .content
   // <div class="card">
   //    <div class="icon prio">★</div>
@@ -84,8 +83,6 @@ function displayToDos(project, index){
   //     </div>
   //    <div class="icon delete-task">🗑</div>
   // </div>
-
-  // dcard, diconPrio, dtask, h4, h5, diconDeleteTask;
 
   dcard = document.createElement("div");
   dcard.setAttribute("class","card");
@@ -117,12 +114,14 @@ function displayToDos(project, index){
   content.appendChild(dcard);
 }
 
-
 function saveToMemory(){
   memory.clear();
   memory.setItem("projectsLibrary", JSON.stringify(projectsLibrary));
 }
 
+function updateProjectText(title){
+  projectText.appendChild(document.createTextNode(title));
+}
 
 
 
@@ -135,14 +134,15 @@ const editNameModal = document.querySelector(".edit-name");
 const newProject = document.querySelector(".new-project");
 const viewTask = document.querySelector(".view-task");
 
+// Non-button items found in home page
+const projectText = document.querySelector("h2");
+const content = document.querySelector(".content");
+
 // Header buttons
 const projectsButton = document.querySelector(".projects-button");
 const newTask = document.querySelector(".new-task");
 const priority = document.querySelector(".priority");
 const dateAdded = document.querySelector(".date-added");
-
-// Content div
-const content = document.querySelector(".content");
 
 // Task buttons
 let prio = document.querySelectorAll(".prio");
@@ -245,6 +245,7 @@ if (memory.getItem("projectsLibrary")){
       if (firstProj == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
     }
   }
+  updateProjectText(firstProj);
 }
 
 
