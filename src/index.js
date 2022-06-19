@@ -1,6 +1,8 @@
 import './style.css';
 import 'bootstrap';
 
+// -- Modal visibility -- 
+
 function openModal(section){
   closeModal();
   switch(section){
@@ -28,10 +30,7 @@ function closeModal(){
   viewTask.style.display = "none";
 }
 
-function deleteProject(){
-  let ans = confirm("Warning! Are you sure to delete the project with all of its tasks?");
-  ans == true ? console.log("Deleted the proj :(") : console.log("We are oks");
-}
+// -- Home functions --
 
 function sort(order){
   switch(order){
@@ -52,6 +51,81 @@ function prioritize(status){
 }
 
 
+//  -- Project maintenance --
+
+function deleteProject(){
+  let ans = confirm("Warning! Are you sure to delete the project with all of its tasks?");
+  ans == true ? console.log("Deleted the proj :(") : console.log("We are oks");
+}
+
+
+
+
+// -- Uncategorized --
+
+function projects(name, title, due, desc, prio) {
+  this.name = name;
+  this.todos = {
+      title:title,
+      due:due,
+      desc:desc,
+      prio:prio
+  };
+};
+
+function displayToDos(project, index){
+
+  // Goal is to display this HTML structure to class .content
+  // <div class="card">
+  //    <div class="icon prio">★</div>
+  //     <div class="task">
+  //       <h4 class="card-title">Create video on whales</h4>
+  //       <h5 class="card-subtitle mb-2 text-muted">Due Jan 20, 2022 at 11PM</h5>
+  //     </div>
+  //    <div class="icon delete-task">🗑</div>
+  // </div>
+
+  // dcard, diconPrio, dtask, h4, h5, diconDeleteTask;
+
+  dcard = document.createElement("div");
+  dcard.setAttribute("class","card");
+
+  diconPrio = document.createElement("div");
+  diconPrio.setAttribute("class","icon prio");
+  project.todos.prio == true ? diconPrio.appendChild(document.createTextNode("★")) : diconPrio.appendChild(document.createTextNode("☆"));
+
+  dtask = document.createElement("div");
+  dtask.setAttribute("class","task");
+
+  h4 = document.createElement("h4");
+  h4.setAttribute("class","card-title");
+  h4.appendChild(document.createTextNode(project.todos.title));
+
+  h5 = document.createElement("h4");
+  h5.setAttribute("class","card-subtitle mb-2 text-muted");
+  h5.appendChild(document.createTextNode(project.todos.due));
+
+  diconDeleteTask = document.createElement("div");
+  diconDeleteTask.setAttribute("class","icon delete-task");
+  diconDeleteTask.appendChild(document.createTextNode("🗑"));
+
+  dtask.appendChild(h4);
+  dtask.appendChild(h5);
+  dcard.appendChild(diconPrio);
+  dcard.appendChild(dtask);
+  dcard.appendChild(diconDeleteTask);
+  content.appendChild(dcard);
+}
+
+
+function saveToMemory(){
+  memory.clear();
+  memory.setItem("projectsLibrary", JSON.stringify(projectsLibrary));
+}
+
+
+
+
 // -- Initial variables --
 
 // Modal
@@ -66,6 +140,9 @@ const projectsButton = document.querySelector(".projects-button");
 const newTask = document.querySelector(".new-task");
 const priority = document.querySelector(".priority");
 const dateAdded = document.querySelector(".date-added");
+
+// Content div
+const content = document.querySelector(".content");
 
 // Task buttons
 let prio = document.querySelectorAll(".prio");
@@ -88,6 +165,15 @@ const createProject = document.querySelector(".create-project");
 // Viewing/Editing a task
 const closeTask = document.querySelector(".close-task");
 const saveChanges = document.querySelector(".save-changes");
+
+
+
+
+// -- Uncategorized --
+let dcard, diconPrio, dtask, h4, h5, diconDeleteTask;
+let memory = window.localStorage;
+
+
 
 
 // -- Initial event listeners --
@@ -137,10 +223,35 @@ saveChanges.addEventListener("click", () => closeModal());
 
 
 
+
+
+// -- Populate initial data --
+
+let projectsLibrary = [];
+projectsLibrary.push(new projects("Dive to ocean floor","Create ship","July 22, 2022","Lorem hwiL wihdkwleW", false));
+projectsLibrary.push(new projects("Dive to ocean floor","Find boat","July 35, 2022","Lorem hwiL wihdkwleW", true));
+projectsLibrary.push(new projects("Drill to the earth core","Find team magma","Aug 15, 2022","Lorem hwiL wihdkwleW", false));
+saveToMemory();
+
+
+
+// Retreive projectsLibrary from memory and display first project
+if (memory.getItem("projectsLibrary")){
+  projectsLibrary = JSON.parse(memory.getItem("projectsLibrary"));
+  let firstProj = false;
+  for(var x in projectsLibrary){
+    if(projectsLibrary[x]){
+      if (firstProj == false) { firstProj = projectsLibrary[x].name };
+      if (firstProj == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
+    }
+  }
+}
+
+
+
+
+
 // -- Quick start JavaScript code --
-
-// let card, cardBody, cardTitle, cardSubtitle, cardText, readButton, removeLink, hyperlink, linebreak;
-
 
 // function displayBook(book, index){
 
@@ -261,12 +372,6 @@ saveChanges.addEventListener("click", () => closeModal());
   
 //   saveToMemory();
 // }
-
-
-
-
-
-
 
 
 // // Initial variables
