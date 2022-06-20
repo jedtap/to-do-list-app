@@ -76,10 +76,20 @@
       <!-- View task -->
       <div class="view-task">
         <input type="text" class="form-control-plaintext title" value="Unscrew T893 bolt">
-        <input type="text" class="form-control-plaintext due" value="Due June 18, 2022 12:15PM">
+        <input type="date" class="form-control-plaintext due">
         <textarea class="form-control-plaintext description" rows="7" >Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's ske Aldus PageMaker including versions of Lorem Ipsum.</textarea>
         <button type="button" class="btn btn-outline-primary close-task">Cancel</button>
         <button type="button" class="btn btn-outline-success save-changes">Save changes</button>
+      </div>
+
+
+      <!-- New task -->
+      <div class="new-task-modal">
+        <input type="text" class="form-control-plaintext title new-title" placeholder="The task name" required>
+        <input type="date" class="form-control-plaintext due new-due" required>
+        <textarea class="form-control-plaintext description new-desc" rows="7" placeholder="After setting the due date, want to add more details?"></textarea>
+        <button type="button" class="btn btn-outline-primary close-task">Cancel</button>
+        <button type="button" class="btn btn-outline-success save-new-task">Save changes</button>
       </div>
 
     </div>
