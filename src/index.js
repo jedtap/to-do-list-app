@@ -18,6 +18,9 @@ function openModal(section){
     case "new-project":
       newProject.style.display = "block";
     break;
+    case "new-task":
+      newTaskModal.style.display = "block";
+    break;
   }
   overlay.style.display = "flex";
 }
@@ -28,6 +31,7 @@ function closeModal(){
   editNameModal.style.display = "none";
   newProject.style.display = "none";
   viewTask.style.display = "none";
+  newTaskModal.style.display = "none";
 }
 
 // -- Home functions --
@@ -124,6 +128,22 @@ function updateProjectText(title){
 }
 
 
+function saveTheNewTask(){
+  let newTask = new projects(projectText.textContent, newTitle.value, newDue.value, newDesc.value, false);
+  projectsLibrary.push(newTask);
+  saveToMemory();
+
+  displayToDos(newTask, projectsLibrary.length - 1 );
+  
+  newTitle.value = "";
+  newDue.value = "";
+  newDesc.value = "";
+
+  closeModal();
+}
+
+
+
 
 // -- Initial variables --
 
@@ -133,6 +153,7 @@ const projectsModal = document.querySelector(".projects-modal");
 const editNameModal = document.querySelector(".edit-name");
 const newProject = document.querySelector(".new-project");
 const viewTask = document.querySelector(".view-task");
+const newTaskModal = document.querySelector(".new-task-modal");
 
 // Non-button items found in home page
 const projectText = document.querySelector("h2");
@@ -162,10 +183,13 @@ const saveName = document.querySelector(".save-name");
 // Creating a totally new project
 const createProject = document.querySelector(".create-project");
 
-// Viewing/Editing a task
-const closeTask = document.querySelector(".close-task");
+// Viewing/Editing/Creating a task
+const newTitle = document.querySelector(".new-title"); 
+const newDue = document.querySelector(".new-due");
+const newDesc = document.querySelector(".new-desc");
+const closeTask = document.querySelectorAll(".close-task");
 const saveChanges = document.querySelector(".save-changes");
-
+const saveNewTask = document.querySelector(".save-new-task");
 
 
 
@@ -180,7 +204,7 @@ let memory = window.localStorage;
 
 // Header buttons
 projectsButton.addEventListener("click", () => openModal("projects"));
-newTask.addEventListener("click", () => openModal("task"));
+newTask.addEventListener("click", () => openModal("new-task"));
 priority.addEventListener("click", () => sort("priority"));
 dateAdded.addEventListener("click", () => sort("date"));
 
@@ -217,9 +241,12 @@ saveName.addEventListener("click", () => openModal("projects"));
 // Creating a totally new project
 createProject.addEventListener("click", () => closeModal());
 
-// Viewing/Editing a task
-closeTask.addEventListener("click", () => closeModal());
+// Viewing/Editing/Creating a task
+closeTask.forEach(closeTask => {
+  closeTask.addEventListener("click", () => closeModal());
+});
 saveChanges.addEventListener("click", () => closeModal());
+saveNewTask.addEventListener("click", () => saveTheNewTask());
 
 
 
@@ -375,21 +402,10 @@ if (memory.getItem("projectsLibrary")){
 // }
 
 
+
+
+
 // // Initial variables
-// const container = document.querySelector(".container");
-// const overlay = document.querySelector(".overlay");
-// const openFormButton  = document.querySelector(".open-form");
-// const closeFormButton = document.querySelector(".close-form");
-// const submitForm = document.querySelector(".submit-form");
-
-// const title = document.querySelector("#title");
-// const author = document.querySelector("#author");
-// const pages = document.querySelector("#pages");
-// const readForm = document.querySelector("#read-form");
-
-// let card, cardBody, cardTitle, cardSubtitle, cardText, readButton, removeLink, hyperlink, linebreak;
-
-
 // // Retreive myLibrary from memory and display all books
 // let myLibrary = [];
 // let memory = window.localStorage;

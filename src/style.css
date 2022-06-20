@@ -161,3 +161,14 @@ h2{
 .due{
   color: var(--gray-main);
 }
+
+/* New task */
+.new-task-modal{
+  width: 30rem;
+  margin: auto;
+  background: var(--white-main);
+  border-radius: 10px;
+  padding: 30px;
+
+  display: none;
+}
