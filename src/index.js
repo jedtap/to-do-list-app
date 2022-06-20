@@ -41,10 +41,32 @@ function sort(order){
     case "priority":
       priority.style.display = "none";
       dateAdded.style.display = "inline";
+
+      clearPage();
+
+      dummyLibrary = [];
+      for(var x in projectsLibrary){
+        if(projectText.textContent == projectsLibrary[x].name && projectsLibrary[x].todos.prio){ dummyLibrary.push(projectsLibrary[x]) };
+      }
+      for(var x in projectsLibrary){
+        if(projectText.textContent == projectsLibrary[x].name && projectsLibrary[x].todos.prio == false){ dummyLibrary.push(projectsLibrary[x]) };
+      }
+      for(var x in dummyLibrary){ displayToDos(dummyLibrary[x], x) };
+      
     break;
     case "date":
       priority.style.display = "inline";
       dateAdded.style.display = "none";
+
+      clearPage();
+
+      for(var x in projectsLibrary){
+        if(projectsLibrary[x]){
+          if (projectText.textContent == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
+        }
+      }
+
+
     break;
 
   }
@@ -142,7 +164,13 @@ function saveTheNewTask(){
   closeModal();
 }
 
-
+function clearPage(){
+  var child = content.lastElementChild; 
+  while (child) {
+    content.removeChild(child);
+    child = content.lastElementChild;
+  }
+}
 
 
 // -- Initial variables --
@@ -196,7 +224,7 @@ const saveNewTask = document.querySelector(".save-new-task");
 // -- Uncategorized --
 let dcard, diconPrio, dtask, h4, h5, diconDeleteTask;
 let memory = window.localStorage;
-
+let dummyLibrary = [];
 
 
 
