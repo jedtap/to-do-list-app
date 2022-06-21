@@ -290,7 +290,7 @@ function generateProject(project, index){
 
   diconPencil.addEventListener("click", () => openModal("edit-project", index));
   dprojTitle.addEventListener("click", () => {
-    console.log("now shows the clicked project", index);
+    generatePage(index);
     closeModal();
   });
   diconDeleteProj.addEventListener("click", () => deleteProject(index));
@@ -325,13 +325,15 @@ function saveNewProjName(index){
 
 }
 
-function generatePage(project){
-  updateProjectText(project);
+function generatePage(index){
+  updateProjectText(listOfProjects[index]);
+  clearPage();
   for(var x in projectsLibrary){
     if(projectsLibrary[x]){ 
-      if (project == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
+      if (listOfProjects[index] == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
     }
   }
+  addTaskButtons();
 }
 
 
