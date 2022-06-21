@@ -17,6 +17,7 @@ function openModal(section, index){
       viewTitle.value = projectsLibrary[index].todos.title;
       viewDue.value = projectsLibrary[index].todos.due;
       viewDesc.textContent = projectsLibrary[index].todos.desc;
+      saveChanges.setAttribute("data-index",index);
 
       viewTask.style.display = "block";
     break;
@@ -127,8 +128,8 @@ function displayToDos(project, index){
   // <div class="card" data-index="1">
   //    <div class="icon prio" data-index="1">★</div>
   //     <div class="task" data-index="1">
-  //       <h4 class="card-title">Create video on whales</h4>
-  //       <h5 class="card-subtitle mb-2 text-muted">Due Jan 20, 2022 at 11PM</h5>
+  //       <h4 class="card-title" data-index="1">Create video on whales</h4>
+  //       <h5 class="card-subtitle mb-2 text-muted" data-index="1">Due Jan 20, 2022 at 11PM</h5>
   //     </div>
   //    <div class="icon delete-task" data-index="1">🗑</div>
   // </div>
@@ -148,10 +149,12 @@ function displayToDos(project, index){
 
   h4 = document.createElement("h4");
   h4.setAttribute("class","card-title");
+  h4.setAttribute("data-index",index);
   h4.appendChild(document.createTextNode(project.todos.title));
 
   h5 = document.createElement("h4");
   h5.setAttribute("class","card-subtitle mb-2 text-muted");
+  h5.setAttribute("data-index",index);
   h5.appendChild(document.createTextNode(project.todos.due));
 
   diconDeleteTask = document.createElement("div");
@@ -225,6 +228,25 @@ function deleteTask(index){
   saveToMemory();
 }
 
+function saveTaskChanges(){
+  index = saveChanges.dataset.index;
+
+  projectsLibrary[index].todos.title = viewTitle.value;
+  projectsLibrary[index].todos.due = viewDue.value;
+  projectsLibrary[index].todos.desc = viewDesc.value;
+
+  revisedTitle = document.querySelector(`[data-index="${index}"][class="card-title"]`);
+  revisedDue = document.querySelector(`[data-index="${index}"][class="card-subtitle mb-2 text-muted"]`);
+
+  revisedTitle.textContent = viewTitle.value;
+  revisedDue.textContent = viewDue.value;
+
+  saveToMemory();
+  closeModal();
+}
+
+
+
 // -- Initial variables --
 
 // Modal
@@ -280,7 +302,8 @@ let dcard, diconPrio, dtask, h4, h5, diconDeleteTask;
 let memory = window.localStorage;
 let dummyLibrary = [];
 let selectedPrio, selectedTrashTask;
-
+let revisedTitle, revisedDue;
+let index;
 
 // -- Initial event listeners --
 
@@ -318,7 +341,7 @@ createProject.addEventListener("click", () => closeModal());
 closeTask.forEach(closeTask => {
   closeTask.addEventListener("click", () => closeModal());
 });
-saveChanges.addEventListener("click", () => closeModal());
+saveChanges.addEventListener("click", () => saveTaskChanges());
 saveNewTask.addEventListener("click", () => saveTheNewTask());
 
 
