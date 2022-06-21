@@ -10,6 +10,8 @@ function openModal(section, index){
       projectsModal.style.display = "block";
     break;
     case "edit-project":
+      editProjName.value = listOfProjects[index];
+      saveName.setAttribute("data-index", index);
       editNameModal.style.display = "block";
     break;
     case "task":
@@ -176,7 +178,7 @@ function saveToMemory(){
 }
 
 function updateProjectText(title){
-  projectText.appendChild(document.createTextNode(title));
+  projectText.textContent = title;
 }
 
 
@@ -201,6 +203,14 @@ function clearPage(){
   while (child) {
     content.removeChild(child);
     child = content.lastElementChild;
+  }
+}
+
+function clearProjList(){
+  var child = listDiv.lastElementChild; 
+  while (child) {
+    listDiv.removeChild(child);
+    child = listDiv.lastElementChild;
   }
 }
 
@@ -245,6 +255,84 @@ function saveTaskChanges(){
   closeModal();
 }
 
+function onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
+}
+
+function generateProject(project, index){
+  // Goal is to recreate this DOM
+  // <div class="item">
+  //   <div class="icon pencil" data-index="1">✎</div>
+  //   <h5 class="project-title" data-index="1">Project Omega</h5>
+  //   <div class="icon delete-project" data-index="1">🗑</div>
+  // </div>
+
+  let ditem, diconPencil, dprojTitle, diconDeleteProj;
+
+  ditem = document.createElement("div");
+  ditem.setAttribute("class","item");
+
+  diconPencil = document.createElement("div");
+  diconPencil.setAttribute("class","icon pencil");
+  diconPencil.setAttribute("data-index",index);
+  diconPencil.appendChild(document.createTextNode("✎"));
+
+  dprojTitle = document.createElement("h5");
+  dprojTitle.setAttribute("class","project-title");
+  dprojTitle.setAttribute("data-index",index);
+  dprojTitle.appendChild(document.createTextNode(project));
+
+  diconDeleteProj = document.createElement("div");
+  diconDeleteProj.setAttribute("class","icon delete-project");
+  diconDeleteProj.setAttribute("data-index",index);
+  diconDeleteProj.appendChild(document.createTextNode("🗑"));
+
+
+  diconPencil.addEventListener("click", () => openModal("edit-project", index));
+  dprojTitle.addEventListener("click", () => {
+    console.log("now shows the clicked project", index);
+    closeModal();
+  });
+  diconDeleteProj.addEventListener("click", () => deleteProject(index));
+
+
+  ditem.appendChild(diconPencil);
+  ditem.appendChild(dprojTitle);
+  ditem.appendChild(diconDeleteProj);
+  listDiv.appendChild(ditem);
+}
+
+
+function saveNewProjName(index){
+
+  // editProjName.value = listOfProjects[index];
+
+  oldProjName = listOfProjects[index];
+
+  if(projectText.textContent == oldProjName){
+    projectText.textContent = editProjName.value;
+  }
+
+  listOfProjects[index] = editProjName.value;
+
+
+  for(var x in projectsLibrary){
+    if(projectsLibrary[x].name == oldProjName){ projectsLibrary[x].name = editProjName.value }
+  }
+
+  clearProjList();
+  for(var y in listOfProjects){ generateProject(listOfProjects[y], y) };
+
+}
+
+function generatePage(project){
+  updateProjectText(project);
+  for(var x in projectsLibrary){
+    if(projectsLibrary[x]){ 
+      if (project == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
+    }
+  }
+}
 
 
 // -- Initial variables --
@@ -268,8 +356,8 @@ const priority = document.querySelector(".priority");
 const dateAdded = document.querySelector(".date-added");
 
 // Task buttons
-let prio ;
-let task ;
+let prio;
+let task;
 let trashTask;
 
 // List of projects
@@ -278,6 +366,7 @@ let projectTitle = document.querySelectorAll(".project-title");
 let trashProject = document.querySelectorAll(".delete-project");
 const closeProjects = document.querySelector(".close-projects");
 const newProjectButton = document.querySelector(".new-project-button");
+const listDiv = document.querySelector(".list");
 
 // Edit project name
 const saveName = document.querySelector(".save-name");
@@ -304,6 +393,10 @@ let dummyLibrary = [];
 let selectedPrio, selectedTrashTask;
 let revisedTitle, revisedDue;
 let index;
+let listOfProjects = [];
+let ditem, diconPencil, dprojTitle, diconDeleteProj;
+const editProjName = document.querySelector(".edit-proj-name");
+let oldProjName, revisingProjName ;
 
 // -- Initial event listeners --
 
@@ -316,23 +409,14 @@ dateAdded.addEventListener("click", () => sort("date"));
 
 
 // List of projects
-pencil.forEach(pencil => {
-  pencil.addEventListener("click", () => openModal("edit-project"));
-});
-projectTitle.forEach(projectTitle => {
-  projectTitle.addEventListener("click", () => {
-    console.log("now shows the clicked project");
-    closeModal();
-  });
-});
-trashProject.forEach(trash => {
-  trash.addEventListener("click", () => deleteProject());
-});
 closeProjects.addEventListener("click", () => closeModal());
 newProjectButton.addEventListener("click", () => openModal("new-project"));
 
 // Edit project name
-saveName.addEventListener("click", () => openModal("projects"));
+saveName.addEventListener("click", () => {
+  saveNewProjName(saveName.dataset.index);
+  openModal("projects");
+});
 
 // Creating a totally new project
 createProject.addEventListener("click", () => closeModal());
@@ -361,166 +445,25 @@ saveToMemory();
 // Retreive projectsLibrary from memory and display first project
 if (memory.getItem("projectsLibrary")){
   projectsLibrary = JSON.parse(memory.getItem("projectsLibrary"));
-  let firstProj = false;
+
+  for(var x in projectsLibrary){
+    if (projectsLibrary[x]){
+      updateProjectText(projectsLibrary[x].name);
+      break;
+    };
+  }
+
   for(var x in projectsLibrary){
     if(projectsLibrary[x]){
-      if (firstProj == false) { firstProj = projectsLibrary[x].name };
-      if (firstProj == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
+      if (projectText.textContent == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
+      listOfProjects.push(projectsLibrary[x].name);
     }
   }
+
+  listOfProjects = listOfProjects.filter(onlyUnique);
+
+
+  for(var y in listOfProjects){ generateProject(listOfProjects[y], y) };
+
   addTaskButtons();
-  updateProjectText(firstProj);
 }
-
-
-
-// -- Quick start JavaScript code --
-
-// function displayBook(book, index){
-
-//   // HTML format is based on bootstrap:
-
-//   // <div class="card" style="width: 18rem;" data-index="1">
-//   //   <div class="card-body">
-//   //     <h2 class="card-title">The Success Principles wefw</h2>
-//   //     <h3 class="card-subtitle mb-2 text-muted">Jack Canfield</h3>
-//   //     <p class="card-text">No. of pages: 69 </p>
-//   //     <button type="button" class="btn btn-outline-primary" data-index="1">Unread</button>
-//   //     <br>
-//   //     <p class="remove-link">
-//   //       <a href="#">Remove book</a>
-//   //     </p>
-//   //   </div>
-//   // </div>
-
-//   card = document.createElement("div");
-//   card.classList.add("card");
-//   card.setAttribute("style","width: 18rem;");
-//   card.setAttribute("data-index", index);
-//   container.appendChild(card);
-  
-//   cardBody = document.createElement("div");
-//   cardBody.classList.add("card-body");
-//   card.appendChild(cardBody);
-
-//   cardTitle = document.createElement("h2");
-//   cardTitle.appendChild(document.createTextNode(book.title));
-//   cardTitle.classList.add("card-title");
-//   cardBody.appendChild(cardTitle);
-
-//   cardSubtitle = document.createElement("h3");
-//   cardSubtitle.appendChild(document.createTextNode(book.author));
-//   cardSubtitle.setAttribute("class","card-subtitle mb-2 text-muted");
-//   cardBody.appendChild(cardSubtitle);
-
-//   cardText = document.createElement("p");
-//   cardText.appendChild(document.createTextNode("No. of pages: " + book.pages));
-//   cardText.classList.add("card-text");
-//   cardBody.appendChild(cardText);
-
-//   readButton = document.createElement("button");
-//   readButton.setAttribute("type","button");
-//   readButton.setAttribute("data-index", index);
-//   if(book.read){
-//     readButton.setAttribute("class","btn btn-primary");
-//     readButton.appendChild(document.createTextNode("Read"));
-//   } else {
-//     readButton.setAttribute("class","btn btn-outline-primary");
-//     readButton.appendChild(document.createTextNode("Unread"));
-//   }
-//   readButton.addEventListener("click", () => changeRead(index) );
-//   cardBody.appendChild(readButton);
-
-//   linebreak = document.createElement("br");
-//   cardBody.appendChild(linebreak);
-  
-//   removeLink = document.createElement("p");
-//   removeLink.classList.add("remove-link");
-//   removeLink.addEventListener("click", () => removeBook(index) )
-//   cardBody.appendChild(removeLink);
-
-//   hyperlink = document.createElement("a");
-//   hyperlink.appendChild(document.createTextNode("Remove book"));
-//   hyperlink.setAttribute("href","#");
-//   removeLink.appendChild(hyperlink);
-// }
-
-// function openForm(){ overlay.style.display = "flex"; };
-// function closeForm(){ overlay.style.display = "none"; };
-
-// function Book(title, author, pages, read){
-//   this.title = title;
-//   this.author = author;
-//   this.pages = pages;
-//   this.read = read;
-// }
-
-// function saveToMemory(){
-//   memory.clear();
-//   memory.setItem("myLibrary", JSON.stringify(myLibrary));
-// }
-
-// function addBookToLibrary(newBook) {
-//   myLibrary.push(newBook);
-//   saveToMemory();
-// }
-
-// function clearForm(){
-//   title.value = "";
-//   author.value = "";
-//   pages.value = "";
-//   readForm.checked = false;
-// }
-
-// function removeBook(index){
-//   let rejectBook = document.querySelector(`[data-index="${index}"][style="width: 18rem;"]`);
-//   rejectBook.style.display = "none";
-
-//   myLibrary[index] = false;
-//   saveToMemory();
-// }
-
-// function changeRead(index){
-//   let statusButton = document.querySelector(`[data-index="${index}"][type="button"]`);
-    
-//   if (myLibrary[index].read){
-//     statusButton.setAttribute("class","btn btn-outline-primary");
-//     statusButton.textContent = "Unread";
-//     myLibrary[index].read = false;
-//   } else {
-//     statusButton.setAttribute("class","btn btn-primary");
-//     statusButton.textContent = "Read";
-//     myLibrary[index].read = true;
-//   }
-  
-//   saveToMemory();
-// }
-
-
-
-
-
-// // Initial variables
-// // Retreive myLibrary from memory and display all books
-// let myLibrary = [];
-// let memory = window.localStorage;
-// if (memory.getItem("myLibrary")){
-//   myLibrary = JSON.parse(memory.getItem("myLibrary"));
-//   for(var x in myLibrary) {
-//     if(myLibrary[x]){
-//       displayBook(myLibrary[x], x);
-//     }
-//   }
-// } 
-
-
-// // Open, close, and submit form
-// openFormButton.addEventListener("click", () => openForm());
-// closeFormButton.addEventListener("click", () => closeForm());
-// submitForm.addEventListener("click", () => {
-//   let newBook = new Book(title.value, author.value, pages.value, readForm.checked);
-//   addBookToLibrary(newBook);
-//   displayBook(newBook, myLibrary.length - 1);
-//   clearForm();
-//   closeForm();
-// })
