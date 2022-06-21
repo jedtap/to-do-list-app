@@ -3,7 +3,7 @@ import 'bootstrap';
 
 // -- Modal visibility -- 
 
-function openModal(section){
+function openModal(section, index){
   closeModal();
   switch(section){
     case "projects":
@@ -13,8 +13,12 @@ function openModal(section){
       editNameModal.style.display = "block";
     break;
     case "task":
+
+      viewTitle.value = projectsLibrary[index].todos.title;
+      viewDue.value = projectsLibrary[index].todos.due;
+      viewDesc.textContent = projectsLibrary[index].todos.desc;
+
       viewTask.style.display = "block";
-      console.log(69);
     break;
     case "new-project":
       newProject.style.display = "block";
@@ -86,14 +90,13 @@ function prioritize(status, index){
     selectedPrio = document.querySelector(`[data-index="${index}"][class="icon prio"]`);
     selectedPrio.textContent = "☆";
     console.log(projectsLibrary);
-
-
   } else {
     projectsLibrary[index].todos.prio = true ;
     selectedPrio = document.querySelector(`[data-index="${index}"][class="icon prio"]`);
     selectedPrio.textContent = "★";
     console.log(projectsLibrary);
   }
+  saveToMemory();
 }
 
 
@@ -121,7 +124,7 @@ function projects(name, title, due, desc, prio) {
 
 function displayToDos(project, index){
   // Goal is to display this HTML structure to class .content
-  // <div class="card">
+  // <div class="card" data-index="1">
   //    <div class="icon prio" data-index="1">★</div>
   //     <div class="task" data-index="1">
   //       <h4 class="card-title">Create video on whales</h4>
@@ -132,6 +135,7 @@ function displayToDos(project, index){
 
   dcard = document.createElement("div");
   dcard.setAttribute("class","card");
+  dcard.setAttribute("data-index",index);
 
   diconPrio = document.createElement("div");
   diconPrio.setAttribute("class","icon prio");
@@ -186,6 +190,7 @@ function saveTheNewTask(){
   newDesc.value = "";
 
   closeModal();
+  saveToMemory();
 }
 
 function clearPage(){
@@ -198,7 +203,6 @@ function clearPage(){
 
 
 function addTaskButtons(){
-
   prio = document.querySelectorAll(".prio");
   task = document.querySelectorAll(".task");
   trashTask = document.querySelectorAll(".delete-task");
@@ -207,13 +211,19 @@ function addTaskButtons(){
     prio.addEventListener("click", () => prioritize(prio.textContent, prio.dataset.index));
   });
   task.forEach(task => {
-    task.addEventListener("click", () => openModal("task"));
+    task.addEventListener("click", () => openModal("task", task.dataset.index));
   });
   trashTask.forEach(trash => {
-    trash.addEventListener("click", () => console.log("task omitted"));
+    trash.addEventListener("click", () => deleteTask(trash.dataset.index));
   });
 }
 
+function deleteTask(index){
+  selectedTrashTask = document.querySelector(`[data-index="${index}"][class="card"]`);
+  selectedTrashTask.style.display = "none";
+  projectsLibrary[index] = false;
+  saveToMemory();
+}
 
 // -- Initial variables --
 
@@ -260,14 +270,16 @@ const newDesc = document.querySelector(".new-desc");
 const closeTask = document.querySelectorAll(".close-task");
 const saveChanges = document.querySelector(".save-changes");
 const saveNewTask = document.querySelector(".save-new-task");
-
+const viewTitle = document.querySelector(".view-title");
+const viewDue = document.querySelector(".view-due");
+const viewDesc = document.querySelector(".view-desc");
 
 
 // -- Uncategorized --
 let dcard, diconPrio, dtask, h4, h5, diconDeleteTask;
 let memory = window.localStorage;
 let dummyLibrary = [];
-let selectedPrio;
+let selectedPrio, selectedTrashTask;
 
 
 // -- Initial event listeners --
@@ -316,9 +328,9 @@ saveNewTask.addEventListener("click", () => saveTheNewTask());
 // -- Populate initial data --
 
 let projectsLibrary = [];
-projectsLibrary.push(new projects("Dive to ocean floor","Create ship","July 22, 2022","Lorem hwiL wihdkwleW", false));
-projectsLibrary.push(new projects("Dive to ocean floor","Find boat","July 35, 2022","Lorem hwiL wihdkwleW", true));
-projectsLibrary.push(new projects("Drill to the earth core","Find team magma","Aug 15, 2022","Lorem hwiL wihdkwleW", false));
+projectsLibrary.push(new projects("Dive to ocean floor","Create ship","2022-07-22","Lorem hwiL wihdkwleW", false));
+projectsLibrary.push(new projects("Dive to ocean floor","Find boat","2022-07-30","Lorem hwiL wihdkwleW", true));
+projectsLibrary.push(new projects("Drill to the earth core","Find team magma","2022-08-15","Lorem hwiL wihdkwleW", false));
 saveToMemory();
 
 
