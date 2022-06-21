@@ -69,12 +69,10 @@ function sort(order){
 
       for(var x in projectsLibrary){
         if(projectsLibrary[x]){
-          if (projectText.textContent == projectsLibrary[x].name) {
-            displayToDos(projectsLibrary[x], x);
-            addTaskButtons();
-          };
+          if (projectText.textContent == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
         }
       }
+      addTaskButtons();
 
 
     break;
@@ -82,8 +80,20 @@ function sort(order){
   }
 }
 
-function prioritize(status){
-  status == "★" ? console.log("deprioritized") : console.log("now a priority!")
+function prioritize(status, index){
+  if(status == "★"){
+    projectsLibrary[index].todos.prio = false ;
+    selectedPrio = document.querySelector(`[data-index="${index}"][class="icon prio"]`);
+    selectedPrio.textContent = "☆";
+    console.log(projectsLibrary);
+
+
+  } else {
+    projectsLibrary[index].todos.prio = true ;
+    selectedPrio = document.querySelector(`[data-index="${index}"][class="icon prio"]`);
+    selectedPrio.textContent = "★";
+    console.log(projectsLibrary);
+  }
 }
 
 
@@ -194,7 +204,7 @@ function addTaskButtons(){
   trashTask = document.querySelectorAll(".delete-task");
 
   prio.forEach(prio => {
-    prio.addEventListener("click", () => prioritize(prio.textContent));
+    prio.addEventListener("click", () => prioritize(prio.textContent, prio.dataset.index));
   });
   task.forEach(task => {
     task.addEventListener("click", () => openModal("task"));
@@ -257,7 +267,7 @@ const saveNewTask = document.querySelector(".save-new-task");
 let dcard, diconPrio, dtask, h4, h5, diconDeleteTask;
 let memory = window.localStorage;
 let dummyLibrary = [];
-
+let selectedPrio;
 
 
 // -- Initial event listeners --
