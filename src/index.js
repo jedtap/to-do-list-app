@@ -40,6 +40,7 @@ function closeModal(){
   newProject.style.display = "none";
   viewTask.style.display = "none";
   newTaskModal.style.display = "none";
+  closeProjects.style.display = "inline";
 }
 
 // -- Home functions --
@@ -105,9 +106,26 @@ function prioritize(status, index){
 
 //  -- Project maintenance --
 
-function deleteProject(){
+function deleteProject(index){
   let ans = confirm("Warning! Are you sure to delete the project with all of its tasks?");
-  ans == true ? console.log("Deleted the proj :(") : console.log("We are oks");
+  if(ans == true) {
+    deleteProjItem = document.querySelector(`[data-index="${index}"][class="item"]`);
+    deleteProjItem.style.display = "none";
+
+    for(var x in projectsLibrary){
+      if(listOfProjects[index] == projectsLibrary[x].name){ projectsLibrary[x] = false };
+    }
+
+    if(listOfProjects[index] == projectText.textContent){
+      projectText.textContent = "";
+      clearPage();
+      closeProjects.style.display = "none";
+    }
+
+    listOfProjects[index] = false;
+    saveToMemory();
+
+  };
 }
 
 
@@ -261,7 +279,7 @@ function onlyUnique(value, index, self) {
 
 function generateProject(project, index){
   // Goal is to recreate this DOM
-  // <div class="item">
+  // <div class="item" data-index="1">
   //   <div class="icon pencil" data-index="1">✎</div>
   //   <h5 class="project-title" data-index="1">Project Omega</h5>
   //   <div class="icon delete-project" data-index="1">🗑</div>
@@ -271,6 +289,7 @@ function generateProject(project, index){
 
   ditem = document.createElement("div");
   ditem.setAttribute("class","item");
+  ditem.setAttribute("data-index", index);
 
   diconPencil = document.createElement("div");
   diconPencil.setAttribute("class","icon pencil");
@@ -322,7 +341,7 @@ function saveNewProjName(index){
 
   clearProjList();
   for(var y in listOfProjects){ generateProject(listOfProjects[y], y) };
-
+  saveToMemory();
 }
 
 function generatePage(index){
@@ -399,6 +418,7 @@ let listOfProjects = [];
 let ditem, diconPencil, dprojTitle, diconDeleteProj;
 const editProjName = document.querySelector(".edit-proj-name");
 let oldProjName, revisingProjName ;
+let deleteProjItem;
 
 // -- Initial event listeners --
 
