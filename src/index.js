@@ -14,6 +14,7 @@ function openModal(section){
     break;
     case "task":
       viewTask.style.display = "block";
+      console.log(69);
     break;
     case "new-project":
       newProject.style.display = "block";
@@ -46,13 +47,19 @@ function sort(order){
 
       dummyLibrary = [];
       for(var x in projectsLibrary){
-        if(projectText.textContent == projectsLibrary[x].name && projectsLibrary[x].todos.prio){ dummyLibrary.push(projectsLibrary[x]) };
+        if(projectText.textContent == projectsLibrary[x].name && projectsLibrary[x].todos.prio){
+          displayToDos(projectsLibrary[x], x);
+          dummyLibrary.push(projectsLibrary[x]);
+        };
       }
       for(var x in projectsLibrary){
-        if(projectText.textContent == projectsLibrary[x].name && projectsLibrary[x].todos.prio == false){ dummyLibrary.push(projectsLibrary[x]) };
+        if(projectText.textContent == projectsLibrary[x].name && projectsLibrary[x].todos.prio == false){
+          displayToDos(projectsLibrary[x], x);
+          dummyLibrary.push(projectsLibrary[x]);
+        };      
       }
-      for(var x in dummyLibrary){ displayToDos(dummyLibrary[x], x) };
-      
+      addTaskButtons();
+
     break;
     case "date":
       priority.style.display = "inline";
@@ -62,7 +69,10 @@ function sort(order){
 
       for(var x in projectsLibrary){
         if(projectsLibrary[x]){
-          if (projectText.textContent == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
+          if (projectText.textContent == projectsLibrary[x].name) {
+            displayToDos(projectsLibrary[x], x);
+            addTaskButtons();
+          };
         }
       }
 
@@ -102,12 +112,12 @@ function projects(name, title, due, desc, prio) {
 function displayToDos(project, index){
   // Goal is to display this HTML structure to class .content
   // <div class="card">
-  //    <div class="icon prio">★</div>
-  //     <div class="task">
+  //    <div class="icon prio" data-index="1">★</div>
+  //     <div class="task" data-index="1">
   //       <h4 class="card-title">Create video on whales</h4>
   //       <h5 class="card-subtitle mb-2 text-muted">Due Jan 20, 2022 at 11PM</h5>
   //     </div>
-  //    <div class="icon delete-task">🗑</div>
+  //    <div class="icon delete-task" data-index="1">🗑</div>
   // </div>
 
   dcard = document.createElement("div");
@@ -115,10 +125,12 @@ function displayToDos(project, index){
 
   diconPrio = document.createElement("div");
   diconPrio.setAttribute("class","icon prio");
+  diconPrio.setAttribute("data-index",index);
   project.todos.prio == true ? diconPrio.appendChild(document.createTextNode("★")) : diconPrio.appendChild(document.createTextNode("☆"));
 
   dtask = document.createElement("div");
   dtask.setAttribute("class","task");
+  dtask.setAttribute("data-index", index);
 
   h4 = document.createElement("h4");
   h4.setAttribute("class","card-title");
@@ -130,6 +142,7 @@ function displayToDos(project, index){
 
   diconDeleteTask = document.createElement("div");
   diconDeleteTask.setAttribute("class","icon delete-task");
+  diconDeleteTask.setAttribute("data-index", index);
   diconDeleteTask.appendChild(document.createTextNode("🗑"));
 
   dtask.appendChild(h4);
@@ -156,7 +169,8 @@ function saveTheNewTask(){
   saveToMemory();
 
   displayToDos(newTask, projectsLibrary.length - 1 );
-  
+  addTaskButtons();
+
   newTitle.value = "";
   newDue.value = "";
   newDesc.value = "";
@@ -170,6 +184,24 @@ function clearPage(){
     content.removeChild(child);
     child = content.lastElementChild;
   }
+}
+
+
+function addTaskButtons(){
+
+  prio = document.querySelectorAll(".prio");
+  task = document.querySelectorAll(".task");
+  trashTask = document.querySelectorAll(".delete-task");
+
+  prio.forEach(prio => {
+    prio.addEventListener("click", () => prioritize(prio.textContent));
+  });
+  task.forEach(task => {
+    task.addEventListener("click", () => openModal("task"));
+  });
+  trashTask.forEach(trash => {
+    trash.addEventListener("click", () => console.log("task omitted"));
+  });
 }
 
 
@@ -194,9 +226,9 @@ const priority = document.querySelector(".priority");
 const dateAdded = document.querySelector(".date-added");
 
 // Task buttons
-let prio = document.querySelectorAll(".prio");
-let task = document.querySelectorAll(".task");
-let trashTask = document.querySelectorAll(".delete-task");
+let prio ;
+let task ;
+let trashTask;
 
 // List of projects
 let pencil = document.querySelectorAll(".pencil");
@@ -236,16 +268,7 @@ newTask.addEventListener("click", () => openModal("new-task"));
 priority.addEventListener("click", () => sort("priority"));
 dateAdded.addEventListener("click", () => sort("date"));
 
-// Task buttons
-prio.forEach(prio => {
-  prio.addEventListener("click", () => prioritize(prio.textContent));
-});
-task.forEach(task => {
-  task.addEventListener("click", () => openModal("task"));
-});
-trashTask.forEach(trash => {
-  trash.addEventListener("click", () => console.log("task omitted"));
-});
+
 
 // List of projects
 pencil.forEach(pencil => {
@@ -300,10 +323,9 @@ if (memory.getItem("projectsLibrary")){
       if (firstProj == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
     }
   }
+  addTaskButtons();
   updateProjectText(firstProj);
 }
-
-
 
 
 
