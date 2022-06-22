@@ -93,12 +93,10 @@ function prioritize(status, index){
     projectsLibrary[index].todos.prio = false ;
     selectedPrio = document.querySelector(`[data-index="${index}"][class="icon prio"]`);
     selectedPrio.textContent = "☆";
-    console.log(projectsLibrary);
   } else {
     projectsLibrary[index].todos.prio = true ;
     selectedPrio = document.querySelector(`[data-index="${index}"][class="icon prio"]`);
     selectedPrio.textContent = "★";
-    console.log(projectsLibrary);
   }
   saveToMemory();
 }
@@ -356,6 +354,23 @@ function generatePage(index){
 }
 
 
+function createNewProj(){
+  
+  let duplicate = false
+
+  for(var y in listOfProjects){
+    if(listOfProjects[y] == newProjName.value){ duplicate = true };
+  }
+  if(duplicate == false){
+    listOfProjects.push(newProjName.value);
+    updateProjectText(newProjName.value);
+    generateProject(newProjName.value, listOfProjects.length - 1);
+    newProjName.value = "";
+  }
+  clearPage();
+  closeModal();
+}
+
 // -- Initial variables --
 
 // Modal
@@ -419,6 +434,8 @@ let ditem, diconPencil, dprojTitle, diconDeleteProj;
 const editProjName = document.querySelector(".edit-proj-name");
 let oldProjName, revisingProjName ;
 let deleteProjItem;
+let newProjName = document.querySelector(".new-proj-name");
+
 
 // -- Initial event listeners --
 
@@ -441,7 +458,7 @@ saveName.addEventListener("click", () => {
 });
 
 // Creating a totally new project
-createProject.addEventListener("click", () => closeModal());
+createProject.addEventListener("click", () => createNewProj());
 
 // Viewing/Editing/Creating a task
 closeTask.forEach(closeTask => {
