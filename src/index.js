@@ -380,11 +380,11 @@ saveChanges.addEventListener("click", () => saveTaskChanges());
 saveNewTask.addEventListener("click", () => saveTheNewTask());
 
 // -- Have a demo? Use this initial data --
-
-projectsLibrary.push(new projects("Dive to ocean floor","Create ship","2022-07-22","Lorem hwiL wihdkwleW", false));
-projectsLibrary.push(new projects("Dive to ocean floor","Find boat","2022-07-30","Lorem hwiL wihdkwleW", true));
-projectsLibrary.push(new projects("Drill to the earth core","Find team magma","2022-08-15","Lorem hwiL wihdkwleW", false));
-saveToMemory();
+// projectsLibrary.push(new projects("Dive to ocean floor","Create ship","2022-07-22","Lorem hwiL wihdkwleW", false));
+// projectsLibrary.push(new projects("Dive to ocean floor","Find boat","2022-07-30","Lorem hwiL wihdkwleW", true));
+// projectsLibrary.push(new projects("Drill to the earth core","Find team magma","2022-08-15","Lorem hwiL wihdkwleW", false));
+// saveToMemory();
+// memory.clear();
 
 // -- Retreive projectsLibrary from memory and display first project --
 
