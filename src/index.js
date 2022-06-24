@@ -1,48 +1,11 @@
 import './style.css';
 import 'bootstrap';
+import openModal from './openmodal';
+import closeModal from './closemodal';
+import displayToDos from './displayToDos';
 
 // -- Functions -- 
-
-// Modal visibility
-
-function openModal(section, index){
-  closeModal();
-  switch(section){
-    case "projects":
-      projectsModal.style.display = "block";
-    break;
-    case "edit-project":
-      editProjName.value = listOfProjects[index];
-      saveName.setAttribute("data-index", index);
-      editNameModal.style.display = "block";
-    break;
-    case "task":
-      viewTitle.value = projectsLibrary[index].todos.title;
-      viewDue.value = projectsLibrary[index].todos.due;
-      viewDesc.textContent = projectsLibrary[index].todos.desc;
-      saveChanges.setAttribute("data-index",index);
-      viewTask.style.display = "block";
-    break;
-    case "new-project":
-      newProject.style.display = "block";
-    break;
-    case "new-task":
-      newTaskModal.style.display = "block";
-    break;
-  }
-  overlay.style.display = "flex";
-}
-
-function closeModal(){
-  overlay.style.display = "none";
-  projectsModal.style.display = "none";
-  editNameModal.style.display = "none";
-  newProject.style.display = "none";
-  viewTask.style.display = "none";
-  newTaskModal.style.display = "none";
-  closeProjects.style.display = "inline";
-}
-
+ 
 // Internal processing functions
 
 function projects(name, title, due, desc, prio) {
@@ -71,7 +34,7 @@ function generatePage(index){
   clearPage();
   for(var x in projectsLibrary){
     if(projectsLibrary[x]){ 
-      if (listOfProjects[index] == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
+      if (listOfProjects[index] == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x, dcard, diconPrio, dtask, h4, h5, diconDeleteTask, content) };
     }
   }
   addTaskButtons();
@@ -87,13 +50,13 @@ function sort(order){
 
       for(var x in projectsLibrary){
         if(projectText.textContent == projectsLibrary[x].name && projectsLibrary[x].todos.prio){
-          displayToDos(projectsLibrary[x], x);
+          displayToDos(projectsLibrary[x], x, dcard, diconPrio, dtask, h4, h5, diconDeleteTask, content);
           dummyLibrary.push(projectsLibrary[x]);
         };
       }
       for(var x in projectsLibrary){
         if(projectText.textContent == projectsLibrary[x].name && projectsLibrary[x].todos.prio == false){
-          displayToDos(projectsLibrary[x], x);
+          displayToDos(projectsLibrary[x], x, dcard, diconPrio, dtask, h4, h5, diconDeleteTask, content);
           dummyLibrary.push(projectsLibrary[x]);
         };      
       }
@@ -107,7 +70,7 @@ function sort(order){
 
       for(var x in projectsLibrary){
         if(projectsLibrary[x]){
-          if (projectText.textContent == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
+          if (projectText.textContent == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x, dcard, diconPrio, dtask, h4, h5, diconDeleteTask, content) };
         }
       }
 
@@ -125,7 +88,7 @@ function addTaskButtons(){
     prio.addEventListener("click", () => prioritize(prio.textContent, prio.dataset.index));
   });
   task.forEach(task => {
-    task.addEventListener("click", () => openModal("task", task.dataset.index));
+    task.addEventListener("click", () => openModal(listOfProjects, projectsLibrary, "task", task.dataset.index, modalVariables, saveChanges, viewTitle, viewDue, viewDesc));
   });
   trashTask.forEach(trash => {
     trash.addEventListener("click", () => deleteTask(trash.dataset.index));
@@ -159,7 +122,7 @@ function saveTaskChanges(){
   revisedDue.textContent = viewDue.value;
 
   saveToMemory();
-  closeModal();
+  closeModal(modalVariables);
 }
 
 function deleteTask(index){
@@ -205,7 +168,7 @@ function createNewProj(){
     newProjName.value = "";
   }
   clearPage();
-  closeModal();
+  closeModal(modalVariables);
 }
 
 function saveNewProjName(index){
@@ -233,14 +196,14 @@ function saveTheNewTask(){
   let newTask = new projects(projectText.textContent, newTitle.value, newDue.value, newDesc.value, false);
   projectsLibrary.push(newTask);
   saveToMemory();
-  displayToDos(newTask, projectsLibrary.length - 1 );
+  displayToDos(newTask, projectsLibrary.length - 1, dcard, diconPrio, dtask, h4, h5, diconDeleteTask, content);
   addTaskButtons();
 
   newTitle.value = "";
   newDue.value = "";
   newDesc.value = "";
 
-  closeModal();
+  closeModal(modalVariables);
   saveToMemory();
 }
 
@@ -258,53 +221,6 @@ function clearPage(){
     content.removeChild(child);
     child = content.lastElementChild;
   }
-}
-
-function displayToDos(project, index){
-  // Goal is to display this HTML structure to class .content
-  // <div class="card" data-index="1">
-  //    <div class="icon prio" data-index="1">★</div>
-  //     <div class="task" data-index="1">
-  //       <h4 class="card-title" data-index="1">Create video on whales</h4>
-  //       <h5 class="card-subtitle mb-2 text-muted" data-index="1">Due Jan 20, 2022 at 11PM</h5>
-  //     </div>
-  //    <div class="icon delete-task" data-index="1">🗑</div>
-  // </div>
-
-  dcard = document.createElement("div");
-  dcard.setAttribute("class","card");
-  dcard.setAttribute("data-index",index);
-
-  diconPrio = document.createElement("div");
-  diconPrio.setAttribute("class","icon prio");
-  diconPrio.setAttribute("data-index",index);
-  project.todos.prio == true ? diconPrio.appendChild(document.createTextNode("★")) : diconPrio.appendChild(document.createTextNode("☆"));
-
-  dtask = document.createElement("div");
-  dtask.setAttribute("class","task");
-  dtask.setAttribute("data-index", index);
-
-  h4 = document.createElement("h4");
-  h4.setAttribute("class","card-title");
-  h4.setAttribute("data-index",index);
-  h4.appendChild(document.createTextNode(project.todos.title));
-
-  h5 = document.createElement("h4");
-  h5.setAttribute("class","card-subtitle mb-2 text-muted");
-  h5.setAttribute("data-index",index);
-  h5.appendChild(document.createTextNode(project.todos.due));
-
-  diconDeleteTask = document.createElement("div");
-  diconDeleteTask.setAttribute("class","icon delete-task");
-  diconDeleteTask.setAttribute("data-index", index);
-  diconDeleteTask.appendChild(document.createTextNode("🗑"));
-
-  dtask.appendChild(h4);
-  dtask.appendChild(h5);
-  dcard.appendChild(diconPrio);
-  dcard.appendChild(dtask);
-  dcard.appendChild(diconDeleteTask);
-  content.appendChild(dcard);
 }
 
 // Projects Modal
@@ -347,10 +263,10 @@ function generateProject(project, index){
   diconDeleteProj.appendChild(document.createTextNode("🗑"));
 
 
-  diconPencil.addEventListener("click", () => openModal("edit-project", index));
+  diconPencil.addEventListener("click", () => openModal(listOfProjects, projectsLibrary, "edit-project", index, modalVariables, saveName, editProjName));
   dprojTitle.addEventListener("click", () => {
     generatePage(index);
-    closeModal();
+    closeModal(modalVariables);
   });
   diconDeleteProj.addEventListener("click", () => deleteProject(index));
 
@@ -370,6 +286,7 @@ const editNameModal = document.querySelector(".edit-name");
 const newProject = document.querySelector(".new-project");
 const viewTask = document.querySelector(".view-task");
 const newTaskModal = document.querySelector(".new-task-modal");
+const modalVariables = [overlay, projectsModal, editNameModal, newProject, viewTask, newTaskModal];
 
 // Non-button items found in home page
 const projectText = document.querySelector("h2");
@@ -437,19 +354,19 @@ let memory = window.localStorage;
 // -- Initial event listeners --
 
 // Header buttons
-projectsButton.addEventListener("click", () => openModal("projects"));
-newTask.addEventListener("click", () => openModal("new-task"));
+projectsButton.addEventListener("click", () => openModal(listOfProjects, projectsLibrary, "projects", false, modalVariables));
+newTask.addEventListener("click", () => openModal(listOfProjects, projectsLibrary, "new-task", false, modalVariables));
 priority.addEventListener("click", () => sort("priority"));
 dateAdded.addEventListener("click", () => sort("date"));
 
 // List of projects
-closeProjects.addEventListener("click", () => closeModal());
-newProjectButton.addEventListener("click", () => openModal("new-project"));
+closeProjects.addEventListener("click", () => closeModal(modalVariables));
+newProjectButton.addEventListener("click", () => openModal(listOfProjects, projectsLibrary, "new-project", false, modalVariables));
 
 // Edit project name
 saveName.addEventListener("click", () => {
   saveNewProjName(saveName.dataset.index);
-  openModal("projects");
+  openModal(listOfProjects, projectsLibrary, "projects", false, modalVariables);
 });
 
 // Creating a totally new project
@@ -457,7 +374,7 @@ createProject.addEventListener("click", () => createNewProj());
 
 // Viewing/Editing/Creating a task
 closeTask.forEach(closeTask => {
-  closeTask.addEventListener("click", () => closeModal());
+  closeTask.addEventListener("click", () => closeModal(modalVariables));
 });
 saveChanges.addEventListener("click", () => saveTaskChanges());
 saveNewTask.addEventListener("click", () => saveTheNewTask());
@@ -483,7 +400,7 @@ if (memory.getItem("projectsLibrary")){
 
   for(var x in projectsLibrary){
     if(projectsLibrary[x]){
-      if (projectText.textContent == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x) };
+      if (projectText.textContent == projectsLibrary[x].name) { displayToDos(projectsLibrary[x], x, dcard, diconPrio, dtask, h4, h5, diconDeleteTask, content) };
       listOfProjects.push(projectsLibrary[x].name);
     }
   }
